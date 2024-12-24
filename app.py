@@ -44,8 +44,59 @@ def order():
         "details": request.args.get("details"),
         "email": request.args.get("email"),
         "phone": request.args.get("phone"),
+        "totalPrice": request.args.get("totalPrice"),
+        "file": request.args.get("file"),  # Include file name
     }
     return render_template('order.html', data=data)
+
+app.config["MAIL_SERVER"] = "smtp.gmail.com"
+app.config["MAIL_PORT"] = 587
+app.config["MAIL_USE_TLS"] = True
+app.config["MAIL_USERNAME"] = "nexusdb189@gmail.com"  # Use your Gmail account to authenticate
+app.config["MAIL_PASSWORD"] = "kxgyhptfuoilxvaq"
+app.config["MAIL_DEFAULT_SENDER"] = "nex@gmail.com"  # Default sender if needed
+
+
+mail = Mail(app)
+
+@app.route("/send-email", methods=["POST"])
+def send_email():
+    data = request.json  # Parse the incoming JSON data
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    try:
+        # Get the sender email from the order summary data
+        sender_email = data.get("email")
+        if not sender_email:
+            return jsonify({"error": "Sender email is missing in the order summary."}), 400
+
+        # Construct the email message
+        msg = Message(
+            subject="New Order Summary",
+            sender=sender_email,  # Use the email from the order summary as the sender
+            recipients=["nexusdb189@gmail.com"],  # Receiver email
+            body=f"""
+            New Order Summary:
+            ---------------------------
+            College: {data['college']}
+            Type: {data['type']}
+            Urgency: {data['urgency']}
+            Word/Page Count: {data['length']}
+            Number of Pages: {data['pages']}
+            Details: {data['details']}
+            Uploaded File: {data['file']}
+            Email: {sender_email}
+            Phone: {data['phone']}
+            Total Price: {data['totalPrice']}
+            """
+        )
+        mail.send(msg)
+        return jsonify({"message": "Email sent successfully!"}), 200
+
+    except Exception as e:
+        print(f"Error: {e}")  # Log the error for debugging
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=5600)
