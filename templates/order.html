@@ -58,6 +58,10 @@ nav ul li {
     margin: 0 1rem;
     position: relative;
 }
+nav ul li a:hover {
+    color: rgb(237, 17, 189);
+    
+}
 
 nav ul li a {
     color: rgb(139, 193, 39);
@@ -540,26 +544,103 @@ footer p {
     </header>
 
     <main>
-        <div class="container" id="services">
-            <div class="services-box">
-                <h2>Your Order Details</h2>
-                <ul>
-                    <li>College Name: {{ data.college }}</li>
-                    <li>Type of Work: {{ data.type }}</li>
-                    <li>Urgency: {{ data.urgency }}</li>
-                    <li>Word/Page Count: {{ data.length }}</li>
-                    <li>Number of Pages: {{ data.pages }}</li>
-                    <li>Details: {{ data.details }}</li>
-                    <li>Email: {{ data.email }}</li>
-                    <li>Phone: {{ data.phone }}</li>
-                </ul>
-            </div>
+      <div class="container" id="services">
+        <div class="services-box">
+            <h2 style="color: white;">Your Order Details</h2>
+            <table style="color: white; width: 100%; border-collapse: collapse;">
+                <tr>
+                    <th style="border: 1px solid white; padding: 8px;">Field</th>
+                    <th style="border: 1px solid white; padding: 8px;">Details</th>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid white; padding: 8px;">College Name</td>
+                    <td style="border: 1px solid white; padding: 8px;">{{ data.college }}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid white; padding: 8px;">Type of Work</td>
+                    <td style="border: 1px solid white; padding: 8px;">{{ data.type }}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid white; padding: 8px;">Urgency</td>
+                    <td style="border: 1px solid white; padding: 8px;">{{ data.urgency }}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid white; padding: 8px;">Word/Page Count</td>
+                    <td style="border: 1px solid white; padding: 8px;">{{ data.length }}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid white; padding: 8px;">Number of Pages</td>
+                    <td style="border: 1px solid white; padding: 8px;">{{ data.pages }}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid white; padding: 8px;">Details</td>
+                    <td style="border: 1px solid white; padding: 8px;">{{ data.details }}</td>
+                </tr>
+                <tr>
+                  <td style="border: 1px solid white; padding: 8px;">Upload</td>
+                  <td style="border: 1px solid white; padding: 8px;">{{ data.file }}</td>
+              </tr>
+                <tr>
+                    <td style="border: 1px solid white; padding: 8px;">Email</td>
+                    <td style="border: 1px solid white; padding: 8px;">{{ data.email }}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid white; padding: 8px;">Phone</td>
+                    <td style="border: 1px solid white; padding: 8px;">{{ data.phone }}</td>
+                </tr>
+                <tr>
+                  <td style="border: 1px solid white; padding: 8px;">Price</td>
+                  <td style="border: 1px solid white; padding: 8px;">{{ data.totalPrice }}</td>
+              </tr>
+              <tr>
+                <td colspan="2" style="text-align: center; padding: 20px;">
+                    <button id="send-email" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                        Send Email
+                    </button>
+                </td>
+            </tr>
+            </table>
         </div>
+    </div>
+    
     </main>
 
     <footer>
         <p>&copy; 2024 Order Summary. All rights reserved.</p>
     </footer>
+    <script>
+      document.getElementById("send-email").addEventListener("click", function () {
+          fetch("/send-email", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                  college: "{{ data.college }}",
+                  type: "{{ data.type }}",
+                  urgency: "{{ data.urgency }}",
+                  length: "{{ data.length }}",
+                  pages: "{{ data.pages }}",
+                  details: "{{ data.details }}",
+                  file: "{{ data.file }}",
+                  email: "{{ data.email }}",
+                  phone: "{{ data.phone }}",
+                  totalPrice: "{{ data.totalPrice }}",
+              }),
+          })
+              .then((response) => {
+                  if (response.ok) {
+                      alert("Email sent successfully!");
+                  } else {
+                      alert("Failed to send the email. Please try again.");
+                  }
+              })
+              .catch((error) => {
+                  console.error("Error:", error);
+                  alert("An error occurred while sending the email.");
+              });
+      });
+  </script>
 </body>
 
 </html>

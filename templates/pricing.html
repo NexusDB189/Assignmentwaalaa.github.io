@@ -647,6 +647,10 @@ footer p {
                 <td id="detail-result"></td>
             </tr>
             <tr>
+                <th>Upload File</th>
+                <td id="pdf-upload-result"></td>
+            </tr>
+            <tr>
                 <th>Additional Fees</th>
                 <td id="additional-fees"></td>
             </tr>
@@ -679,24 +683,66 @@ footer p {
         <p>&copy; 2024 Innovative Assignment & Project Solutions. Crafted for excellence.</p>
     </div>
 </footer>
-
+    <script src="/static/js/scripts.js"></script>
     <script>
         document.getElementById('final-submit-button').addEventListener('click', function () {
+            const college = document.getElementById('college').value;
+            const type = document.getElementById('type').value;
+            const urgency = document.getElementById('urgency').value;
+            const length = parseInt(document.getElementById('length').value);
+            const pages = parseInt(document.getElementById('pages').value);
+            const details = document.getElementById('details').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+    
+            // Get uploaded file name
+            const pdfUpload = document.getElementById('pdf-upload').files[0];
+            const fileName = pdfUpload ? pdfUpload.name : 'No file uploaded';
+    
+            // Basic validation
+            if (!college || !type || !urgency || !length || !pages || !email || !phone) {
+                alert("Please fill in all required fields.");
+                return;
+            }
+    
+            // Calculate price (as per existing logic)
+            let price = 5;
+    
+            if (urgency === "urgent") price += 50;
+            else if (urgency === "express") price += 30;
+            else price += 10;
+    
+            if (length <= 150) price += 40;
+            else if (length > 150 && length <= 300) price += 50;
+            else price += 100;
+    
+            if (pages <= 3) price += 100;
+            else if (pages > 3 && pages <= 10) price += 150 + pages * 2;
+            else price += 200 + pages * 1.5;
+    
+            let additionalFees = details ? 20 : 0;
+            price += additionalFees;
+    
+            // Construct query parameters
             const params = {
-                college: document.getElementById('college').value,
-                type: document.getElementById('type').value,
-                urgency: document.getElementById('urgency').value,
-                length: document.getElementById('length').value,
-                pages: document.getElementById('pages').value,
-                details: document.getElementById('details').value,
-                email: document.getElementById('email').value,
-                phone: document.getElementById('phone').value
+                college: college,
+                type: type,
+                urgency: urgency,
+                length: length,
+                pages: pages,
+                details: details,
+                email: email,
+                phone: phone,
+                totalPrice: price.toFixed(2),
+                file: fileName, // Include file name in query
             };
-
+    
             const queryString = new URLSearchParams(params).toString();
             window.location.href = `/order?${queryString}`;
         });
     </script>
-    <script src="/static/js/scripts.js"></script>
+    
+    
+    
 </body>
 </html>
